@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"> <!-- Sempre per primo -->
+  <meta name="viewport"; content="width=device-width, initial-scale=1";>
+  <meta name="author" content="Arboricum Sandorsi">
+<title>Typing Challenge</title>
+<style>
+.main {
+width: 700px;
+height: 400px;
+text-align: center;
+border: 2px solid black;
+}
+#demo1 {
+position: absolute;
+top: 30px;
+left: 100px;
+text-align: center;
+border: 2px solid black;
+width: 500px;
+height: 300px;
+background-color: black;
+}
+#demo2 {
+position: absolute;
+top: 340px;
+left: 100px;
+text-align: center;
+width: 500px;
+height: 30px;
+}
+#inizio {
+display: none;
+}
+.ya1 {
+position: absolute;
+top: 0px;
+width: 60px;
+height: 10px;
+}
+#upliv{
+position: absolute;
+width: 100%;
+margin-left: auto;
+margin-right: auto;
+top: -10px;
+}
+#sconfitta {
+position: relative;
+margin-top: 40px;
+margin-left: auto;
+margin-right: auto;
+color: gold;
+display: none;
+}
+button {
+cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+<div class='main'>
+
+<div id='demo1'>
+<p id='upliv' style='color:lightgreen'></p><p id='upscore' style='position:absolute;top:-10px;color:white;left:5px'></p><p id='levelChoice' style='position:absolute;top:-10px;color:white;right:5px'></p>
+<div class='ya1' style='left:50px'><p id='a1' style='color:white'></p></div>
+<div class='ya1' style='left:150px'><p id='a2' style='color:white'></p></div>
+<div class='ya1' style='left:250px'><p id='a3' style='color:white'></p></div>
+<div class='ya1' style='left:350px'><p id='a4' style='color:white'></p></div>
+<h3 id='sconfitta'></h3>
+<div id='scegliDiff' style='color:white'>
+<p>Scegli la difficoltà:</p><br>
+<button onclick='ean.deasy()'>Facile</button><button onclick='ean.dmedium()'>Media</button><button onclick='ean.dhard()'>Difficile</button>
+</div>
+<button id='inizio' style='margin-left:auto;margin-right:auto;margin-top:50px'>Gioca</button><br>
+</div>
+
+<div id='demo2'>
+<p style='display:inline'>La tua parola: </p><input style='display:inline' type='text' id='b1' value=''/><br>
+<p id='esito'></p>
+</div>
+
+</div>
+
+</body>
+
+<script src='rndmword.js'></script>
+<script src='rndmwordM.js'></script>
+<script src='rndmwordD.js'></script>
+<script>
+var av = 5;
+var avb = 5;
+var avc = 5;
+var avd = 5;
+var speed = 1;
+var parole = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z'];
+var paroleM = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+var paroleD = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','0','è','é','ì','ò','à','ù','-','!','"','£','$','%','&','/','(',')','=','?','^'];
+window.addEventListener('keydown',valida);
+var diff = '';
+var inserita = '';
+var attProv = '';
+var attuale = 'ZzZzZz0';
+var attuale1 = 'ZzZzZz1';
+var attuale2 = 'ZzZzZz2';
+var attuale3 = 'ZzZzZz3';
+var periodo;
+var periodo1;
+var periodo2;
+var periodo3;
+var aperiodo;
+var aperiodo1;
+var aperiodo2;
+var aperiodo3;
+var contLvl = 0;
+var livello = 1;
+var punti = 0;
+var score = document.getElementById('upscore');
+
+ean = {
+ deasy: function() {
+ diff = 'easy';
+ document.getElementById('inizio').addEventListener('click', start);
+ document.getElementById('inizio').style.display = 'block';
+ document.getElementById('scegliDiff').style.display = 'none';
+ },
+  dmedium: function() {
+ diff = 'medium';
+ document.getElementById('inizio').addEventListener('click', start);
+ document.getElementById('inizio').style.display = 'block';
+ document.getElementById('scegliDiff').style.display = 'none';
+ },
+  dhard: function() {
+ diff = 'hard';
+ document.getElementById('inizio').addEventListener('click', start);
+ document.getElementById('inizio').style.display = 'block';
+ document.getElementById('scegliDiff').style.display = 'none';
+ }
+}
+
+function start() {
+document.getElementById('inizio').style.display = 'none';
+document.getElementById('inizio').removeEventListener('click', start);
+document.getElementById('upliv').innerHTML = 'Livello ' + livello;
+ switch(diff) {
+ case 'easy':
+ document.getElementById('levelChoice').style.color = 'green';
+ document.getElementById('levelChoice').innerHTML = 'Facile';
+ break;
+ case 'medium':
+ document.getElementById('levelChoice').style.color = 'yellow';
+ document.getElementById('levelChoice').innerHTML = 'Medio';
+ break;
+ case 'hard':
+ document.getElementById('levelChoice').style.color = 'red';
+ document.getElementById('levelChoice').innerHTML = 'Difficile';
+ break;
+ }
+score.innerHTML = 'Punteggio: ' + punti;
+  if (livello == 1) {
+  rndm.col1a();
+  setTimeout(rndm.col1b,1300);
+  } else if (livello == 2) {
+  rndm.col1a();
+  setTimeout(rndm.col1b,1300);
+  setTimeout(rndm.col1c,2600);
+  } else if (livello > 2) {
+  rndm.col1a();
+  setTimeout(rndm.col1b,1300);
+  setTimeout(rndm.col1c,2600);
+  setTimeout(rndm.col1d,3900);
+  }
+}
+
+rndm = {
+ col1a: function() {
+ av = 5;
+ window.addEventListener('keydown',valida);
+ document.getElementsByClassName('ya1')[0].style.top = av + 'px';
+  switch(diff) {
+  case 'easy':
+  rndmWord1a();
+  break;
+  case 'medium':
+  rndmWord1M();
+  break;
+  case 'hard':
+  rndmWord1D();
+  break;
+  }
+  go.avGo();
+ },
+ col1b: function() {
+ avb = 5;
+ window.addEventListener('keydown',valida);
+ document.getElementsByClassName('ya1')[1].style.top = avb + 'px';
+  switch(diff) {
+  case 'easy':
+  rndmWord1a();
+  break;
+  case 'medium':
+  rndmWord1M();
+  break;
+  case 'hard':
+  rndmWord1D();
+  break;
+  }
+ go.avbGo();
+ },
+ col1c: function() {
+ avc = 5;
+ window.addEventListener('keydown',valida);
+ document.getElementsByClassName('ya1')[2].style.top = avc + 'px';
+  switch(diff) {
+  case 'easy':
+  rndmWord1a();
+  break;
+  case 'medium':
+  rndmWord1M();
+  break;
+  case 'hard':
+  rndmWord1D();
+  break;
+  }
+ go.avcGo();
+ },
+ col1d: function() {
+ avd = 5;
+ window.addEventListener('keydown',valida);
+ document.getElementsByClassName('ya1')[3].style.top = avd + 'px';
+  switch(diff) {
+  case 'easy':
+  rndmWord1a();
+  break;
+  case 'medium':
+  rndmWord1M();
+  break;
+  case 'hard':
+  rndmWord1D();
+  break;
+  }
+ go.avdGo();
+ }
+}
+
+go = {
+ avGo: function() {
+ attuale = attProv;
+ document.getElementById('a1').innerHTML = attuale;
+ document.getElementById('b1').focus();
+ scendi.avScendi();
+ },
+ avbGo: function() {
+ attuale1 = attProv;
+ document.getElementById('a2').innerHTML = attuale1;
+ document.getElementById('b1').focus();
+ scendi.avbScendi();
+ },
+ avcGo: function() {
+ attuale2 = attProv;
+ document.getElementById('a3').innerHTML = attuale2;
+ document.getElementById('b1').focus();
+ scendi.avcScendi();
+ },
+ avdGo: function() {
+ attuale3 = attProv;
+ document.getElementById('a4').innerHTML = attuale3;
+ document.getElementById('b1').focus();
+ scendi.avdScendi();
+ }
+}
+
+scendi = {
+ avScendi: function() {
+  if (av < 270) {
+  document.getElementsByClassName('ya1')[0].style.top = av + 'px';
+  av += speed;
+  periodo = setTimeout(scendi.avScendi, 100);
+  } else if (av == 270) {
+  document.getElementById('a1').innerHTML = '';
+  cancAll();
+  document.getElementById('sconfitta').innerHTML = 'Hai perso!';
+  document.getElementById('sconfitta').style.display = 'block';
+  }
+ },
+ avbScendi: function() {
+  if (avb < 270) {
+  document.getElementsByClassName('ya1')[1].style.top = avb + 'px';
+  avb += speed;
+  periodo1 = setTimeout(scendi.avbScendi, 100);
+  } else if (avb == 270) {
+  document.getElementById('a2').innerHTML = '';
+  cancAll();
+  document.getElementById('sconfitta').innerHTML = 'Hai perso!';
+  document.getElementById('sconfitta').style.display = 'block';
+  }
+ },
+ avcScendi: function() {
+  if (avc < 270) {
+  document.getElementsByClassName('ya1')[2].style.top = avc + 'px';
+  avc += speed;
+  periodo2 = setTimeout(scendi.avcScendi, 100);
+  } else if (avc == 270) {
+  document.getElementById('a3').innerHTML = '';
+  cancAll();
+  document.getElementById('sconfitta').innerHTML = 'Hai perso!';
+  document.getElementById('sconfitta').style.display = 'block';
+  }
+ },
+ avdScendi: function() {
+  if (avd < 270) {
+  document.getElementsByClassName('ya1')[3].style.top = avd + 'px';
+  avd += speed;
+  periodo3 = setTimeout(scendi.avdScendi, 100);
+  } else if (avd == 270) {
+  document.getElementById('a4').innerHTML = '';
+  cancAll();
+  document.getElementById('sconfitta').innerHTML = 'Hai perso!';
+  document.getElementById('sconfitta').style.display = 'block';
+  }
+ }
+}
+
+function valida(event) {
+var x = event.which || event.keyCode;
+  if (x == 13) {
+  inserita = document.getElementById('b1').value;
+  confronta();
+  window.removeEventListener('keydown',valida);
+  }
+}
+
+function confronta() {
+var puntiP = 0;
+  switch(inserita) {
+  case attuale:
+  clearTimeout(periodo);
+  document.getElementById('a1').style.color = 'red';
+  document.getElementById('b1').value = '';
+  document.getElementById('b1').focus();
+  puntiP = attuale.length;
+  punti += puntiP;
+  score.innerHTML = 'Punteggio: ' + punti;
+  contLvl += 1;
+  setTimeout(cancAtt, 300);
+  aperiodo = setTimeout(rndm.col1a,1500);
+  upLvl();
+  break;
+  
+  case attuale1:
+  clearTimeout(periodo1);
+  document.getElementById('a2').style.color = 'red';
+  document.getElementById('b1').value = '';
+  document.getElementById('b1').focus();
+  puntiP = attuale.length;
+  punti += puntiP;
+  score.innerHTML = 'Punteggio: ' + punti;
+  contLvl += 1;
+  setTimeout(cancAtt1, 300);
+  aperiodo1 = setTimeout(rndm.col1b,1500);
+  upLvl();
+  break;
+  
+  case attuale2:
+  clearTimeout(periodo2);
+  document.getElementById('a3').style.color = 'red';
+  document.getElementById('b1').value = '';
+  document.getElementById('b1').focus();
+  puntiP = attuale.length;
+  punti += puntiP;
+  score.innerHTML = 'Punteggio: ' + punti;
+  contLvl += 1;
+  setTimeout(cancAtt2, 300);
+  aperiodo2 = setTimeout(rndm.col1c,1500);
+  upLvl();
+  break;
+  
+  case attuale3:
+  clearTimeout(periodo3);
+  document.getElementById('a4').style.color = 'red';
+  document.getElementById('b1').value = '';
+  document.getElementById('b1').focus();
+  puntiP = attuale.length;
+  punti += puntiP;
+  score.innerHTML = 'Punteggio: ' + punti;
+  contLvl += 1;
+  setTimeout(cancAtt3, 300);
+  aperiodo3 = setTimeout(rndm.col1d,1500);
+  upLvl();
+  break;
+  
+  default: 
+  document.getElementById('esito').innerHTML = 'Sbagliato!';
+  setTimeout(canc, 500);
+  document.getElementById('b1').value = '';
+  }
+}
+
+function cancAtt() {
+document.getElementById('a1').innerHTML = '';
+document.getElementById('a1').style.color = 'white';
+}
+function cancAtt1() {
+document.getElementById('a2').innerHTML = '';
+document.getElementById('a2').style.color = 'white';
+}
+function cancAtt2() {
+document.getElementById('a3').innerHTML = '';
+document.getElementById('a3').style.color = 'white';
+}
+function cancAtt3() {
+document.getElementById('a4').innerHTML = '';
+document.getElementById('a4').style.color = 'white';
+}
+
+function canc() {
+window.addEventListener('keydown',valida);
+document.getElementById('esito').innerHTML = '';
+}
+
+function cancAll() {
+clearTimeout(periodo);
+  clearTimeout(periodo1);
+  clearTimeout(periodo2);
+  clearTimeout(periodo3);
+  clearTimeout(aperiodo);
+  clearTimeout(aperiodo1);
+  clearTimeout(aperiodo2);
+  clearTimeout(aperiodo3);
+  cancAtt();
+  cancAtt1();
+  cancAtt2();
+  cancAtt3();
+}
+
+function upLvl() {
+  switch (contLvl) {
+  case 15:
+  livello = 2;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 30:
+  livello = 3;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 45:
+  livello = 4;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 60:
+  livello = 5;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 75:
+  livello = 6;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 90:
+  livello = 7;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 105:
+  livello = 8;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 120:
+  livello = 9;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 135:
+  livello = 10;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 150:
+  livello = 11;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 165:
+  livello = 12;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 180:
+  livello = 13;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  
+  case 195:
+  livello = 13;
+  cancAll();
+  setTimeout(start,1000);
+  break;
+  }
+}
+
+</script>
+</html>
+
+
