@@ -1,0 +1,2 @@
+# typingChallenge
+Typing challenge game
